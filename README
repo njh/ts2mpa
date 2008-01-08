@@ -1,0 +1,11 @@
+ts2mpa
+======
+By Nicholas Humfrey <njh@aelius.com>
+
+ts2mpa is a simple tool to extract MPEG Audio from a MPEG-2 Transport Stream.
+
+Usage:
+
+	ts2mpa [options] <input> <output>
+
+
