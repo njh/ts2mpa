@@ -1,10 +1,12 @@
 CC=gcc
+PACKAGE=ts2mpa
 VERSION=0.1
 CFLAGS=-g -Wall -DVERSION=$(VERSION)
 LDFLAGS=
 
-all: ts2mpa
 
+
+all: ts2mpa
 
 ts2mpa: ts2mpa.o mpa_header.o
 	$(CC) $(LDFLAGS) -o ts2mpa ts2mpa.o mpa_header.o
@@ -19,6 +21,12 @@ clean:
 	rm -f *.o ts2mpa
 	
 dist:
+	distdir='$(PACKAGE)-$(VERSION)'; mkdir $$distdir || exit 1; \
+	list=`svn ls`; for file in $$list; do \
+		cp -pR $$file $$distdir || exit 1; \
+	done; \
+	tar -zcf $$distdir.tar.gz $$distdir; \
+	rm -fr $$distdir
 	
 	
 .PHONY: all clean dist
