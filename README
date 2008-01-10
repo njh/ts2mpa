@@ -9,3 +9,13 @@ Usage:
 	ts2mpa [options] <input> <output>
 
 
+
+Todo
+----
+
+- Add support for resyncing transport stream
+- Add support for choosing PID / Stream ID
+- Add support for STDIN/STDOUT
+- Automatic output file name choosing
+
+- Progress bar?
