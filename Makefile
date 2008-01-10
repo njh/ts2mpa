@@ -1,5 +1,6 @@
 CC=gcc
-CFLAGS=-g -Wall
+VERSION=0.1
+CFLAGS=-g -Wall -DVERSION=$(VERSION)
 LDFLAGS=
 
 all: ts2mpa
@@ -16,3 +17,8 @@ mpa_header.o: mpa_header.c mpa_header.h
   
 clean:
 	rm -f *.o ts2mpa
+	
+dist:
+	
+	
+.PHONY: all clean dist
