@@ -28,13 +28,14 @@
 
 
 
-typedef struct mpeg_stream_s {
+typedef struct ts2mpa_s {
 	
 	FILE* input;
 	FILE* output;
 	
 	int pid;
 	int synced;
+	int never_synced;
 	int continuity_count;
 	int pes_stream_id;
 	int pes_remaining;
@@ -43,7 +44,7 @@ typedef struct mpeg_stream_s {
 	
 	mpa_header_t mpah;
 	
-} mpeg_stream_t;
+} ts2mpa_t;
 
 
 

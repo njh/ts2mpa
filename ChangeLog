@@ -1,5 +1,15 @@
-2008-01-10  Nicholas Humfrey  <njh@aelius.com>
+Version 0.2 (2008-01-10)
+------------------------
 
-        * Initial release
+- Added -q option to disable messages
+- Added -s option to choose a stream id
+- Added -p option to choose a PID
+- Fix for Linux, but adding #include <signal.h>
+- Added support for STDIN and STDOUT
 
+
+Version 0.1 (2008-01-10)
+------------------------
+
+- Initial Release
 
