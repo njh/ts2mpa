@@ -101,8 +101,8 @@ static void extract_pes_payload( ts2mpa_t *ts2mpa, unsigned char *pes_ptr, size_
 				// keep the first stream we see
 				ts2mpa->pes_stream_id = stream_id;	
 				if (!Quiet)
-					fprintf(stderr, "ts2mpa: Found valid PES audio packet (pid: %d, stream id: 0x%x, length: %u)\n",
-									ts2mpa->pid, stream_id, pes_total_len);
+					fprintf(stderr, "ts2mpa: Found valid PES audio packet (offset: 0x%lx, pid: %d, stream id: 0x%x, length: %u)\n",
+									((unsigned long)ts2mpa->total_packets-1)*TS_PACKET_SIZE, ts2mpa->pid, stream_id, pes_total_len);
 			} else {
 				if (!Quiet)
 					fprintf(stderr, "ts2mpa: Ignoring additional audio stream ID 0x%x (pid: %d).\n",
