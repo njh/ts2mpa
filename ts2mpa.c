@@ -211,9 +211,6 @@ static void process_ts_packets( ts2mpa_t *ts2mpa )
 		
 		count = fread(buf, TS_PACKET_SIZE, 1, ts2mpa->input);
 		if (count==0) break;
-		
-		// Display the number of packets processed
-		if (!Quiet) fprintf(stderr, "ts2mpa: packets processed: %lu\r", ts2mpa->total_packets);
 		ts2mpa->total_packets++;
 		
 		// Check the sync-byte
@@ -441,7 +438,11 @@ int main( int argc, char** argv )
 	// Hard work happens here
 	process_ts_packets( ts2mpa );
 	
-	if (!Quiet) fprintf(stderr, "\nts2mpa: Total written: %lu bytes\n", ts2mpa->total_bytes);
+	// Display statistics
+	if (!Quiet) {
+    fprintf(stderr, "ts2mpa: TS packets processed: %lu\n", ts2mpa->total_packets);
+    fprintf(stderr, "ts2mpa: Total written: %lu bytes\n", ts2mpa->total_bytes);
+	}
 	
 	// Close the input and output files
 	fclose( ts2mpa->input );
