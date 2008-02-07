@@ -48,7 +48,7 @@ static int validate_pes_header( int pid, unsigned char* buf_ptr, int buf_len )
 	    PES_PACKET_SYNC_BYTE2(buf_ptr) != 0x00 ||
 	    PES_PACKET_SYNC_BYTE3(buf_ptr) != 0x01 )
 	{
-		if (!Quiet) fprintf(stderr, "ts2mpa: Invalid PES header (pid: %d).  \n", pid);
+		if (!Quiet) fprintf(stderr, "ts2mpa: Invalid PES header (pid: %d).\n", pid);
 		return 0;
 	}
 	
@@ -147,10 +147,14 @@ static void extract_pes_payload( ts2mpa_t *ts2mpa, unsigned char *pes_ptr, size_
 			if (mpa_header_parse(es_ptr, &ts2mpa->mpah)) {
 
 				// Looks good, we have gained sync.
-				if (!Quiet && ts2mpa->never_synced) {
-					fprintf(stderr, "ts2mpa: ");
-					mpa_header_print( &ts2mpa->mpah );
-					fprintf(stderr, "ts2mpa: MPEG Audio Framesize: %d bytes\n", ts2mpa->mpah.framesize);
+				if (!Quiet) {
+				  if (ts2mpa->never_synced) {
+            fprintf(stderr, "ts2mpa: ");
+            mpa_header_print( &ts2mpa->mpah );
+            fprintf(stderr, "ts2mpa: MPEG Audio Framesize: %d bytes\n", ts2mpa->mpah.framesize);
+          } else {
+            fprintf(stderr, "ts2mpa: Regained sync at 0x%lx\n", ((unsigned long)ts2mpa->total_packets-1)*TS_PACKET_SIZE);
+          }
 				}
 				ts2mpa->synced = 1;
 				ts2mpa->never_synced = 0;
@@ -163,8 +167,8 @@ static void extract_pes_payload( ts2mpa_t *ts2mpa, unsigned char *pes_ptr, size_
 		}
 		
 		
-		// If stream is synced then put data info buffer
-		if (ts2mpa->synced) {
+		// If stream is synced then write the data out
+		if (ts2mpa->synced && es_len > 0) {
 			int written = 0;
 			
 			// Write out the data
@@ -187,7 +191,10 @@ static void ts_continuity_check( ts2mpa_t *ts2mpa, int ts_cc )
 	
 		// Only display an error after we gain sync
 		if (ts2mpa->synced) {
-			if (!Quiet) fprintf(stderr, "ts2mpa: Warning, TS continuity error (pid: %d)    \n", ts2mpa->pid );
+			if (!Quiet) {
+			  fprintf(stderr, "ts2mpa: Warning, TS continuity error at 0x%lx\n",
+			    ((unsigned long)ts2mpa->total_packets-1)*TS_PACKET_SIZE);
+			}
 			ts2mpa->synced=0;
 		}
 		ts2mpa->continuity_count = ts_cc;
@@ -215,23 +222,27 @@ static void process_ts_packets( ts2mpa_t *ts2mpa )
 		
 		// Check the sync-byte
 		if (TS_PACKET_SYNC_BYTE(buf) != 0x47) {
-			fprintf(stderr,"ts2mpa: Lost Transport Stream syncronisation - aborting.    \n");
-			// FIXME: try and regain synchronisation
+			fprintf(stderr,"ts2mpa: Lost Transport Stream syncronisation - aborting (offset: 0x%lx).\n",
+			  ((unsigned long)ts2mpa->total_packets-1)*TS_PACKET_SIZE);
+			// FIXME: try and re-gain synchronisation
 			break;
 		}
-		
-		// Transport error?
-		if ( TS_PACKET_TRANS_ERROR(buf) ) {
-			if (!Quiet) fprintf(stderr, "ts2mpa: Warning, transport error in PID %d.    \n", TS_PACKET_PID(buf));
-			ts2mpa->synced = 0;
-			continue;
-		}			
 
-		// Scrambled?
-		if ( TS_PACKET_SCRAMBLING(buf) ) {
-			if (!Quiet) fprintf(stderr, "ts2mpa: Warning, PID %d is scrambled.    \n", TS_PACKET_PID(buf));
-			continue;
-		}	
+		// Check packet validity
+		if (TS_PACKET_PID(buf) == ts2mpa->pid || ts2mpa->pid == -1) {
+      // Scrambled?
+      if ( TS_PACKET_SCRAMBLING(buf) ) {
+        if (!Quiet) fprintf(stderr, "ts2mpa: Warning, PID %d is scrambled.\n", TS_PACKET_PID(buf));
+        continue;
+      }	
+		
+      // Transport error?
+		  if ( TS_PACKET_TRANS_ERROR(buf) ) {
+        if (!Quiet) fprintf(stderr, "ts2mpa: Warning, transport error at 0x%lx\n", ((unsigned long)ts2mpa->total_packets-1)*TS_PACKET_SIZE);
+        ts2mpa->synced = 0;
+		    continue;
+      }
+ 		}
 
 		// Location of and size of PES payload
 		pes_ptr = &buf[4];
@@ -248,7 +259,6 @@ static void process_ts_packets( ts2mpa_t *ts2mpa )
 			pes_ptr += (TS_PACKET_ADAPT_LEN(buf) + 1);
 			pes_len -= (TS_PACKET_ADAPT_LEN(buf) + 1);
 		}
-
 
 		// Check we know about the payload
 		if (TS_PACKET_PID(buf) == 0x1FFF) {
@@ -270,7 +280,7 @@ static void process_ts_packets( ts2mpa_t *ts2mpa )
 
 		// Process the packet, if it is the PID we are interested in		
 		if (TS_PACKET_PID(buf) == ts2mpa->pid) {
-
+		
 			// Continuity check
 			ts_continuity_check( ts2mpa, TS_PACKET_CONT_COUNT(buf) );
 		
