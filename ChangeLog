@@ -1,3 +1,10 @@
+Version 0.3 (2010-08-20)
+------------------------
+
+- Improved error handling when there is a problem in the stream.
+- More display of byte offsets.
+
+
 Version 0.2 (2008-01-10)
 ------------------------
 
@@ -12,4 +19,3 @@ Version 0.1 (2008-01-10)
 ------------------------
 
 - Initial Release
-
