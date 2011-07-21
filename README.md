@@ -4,12 +4,13 @@ By Nicholas Humfrey <njh@aelius.com>
 
 ts2mpa is a simple tool to extract MPEG Audio from a MPEG-2 Transport Stream.
 
+Usage:
 
-Usage: ts2mpa [options] <infile> <outfile>
-    -h             Help - this message.
-    -q             Quiet - don't print messages to stderr.
-    -p <pid>       Choose a specific transport stream PID.
-    -s <streamid>  Choose a specific PES stream ID.
+    ts2mpa [options] <infile> <outfile>
+      -h             Help - this message.
+      -q             Quiet - don't print messages to stderr.
+      -p <pid>       Choose a specific transport stream PID.
+      -s <streamid>  Choose a specific PES stream ID.
 
 
 
