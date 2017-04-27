@@ -21,10 +21,12 @@ The following examples are based on DVB-T in London, tuned to
 BBC Radio coming from the the Crystal Palace transmitter:
 
 Record BBC Radio 4 to disk:
-dvbstream -o -f 529833330 439 | ts2mpa - recording.mp2
+
+    dvbstream -o -f 529833330 439 | ts2mpa - recording.mp2
 
 Play BBC Radio 1 through soundcard:
-dvbstream -o -f 529833330 436 | ts2mpa -q - - | mpg123 -
+
+    dvbstream -o -f 529833330 436 | ts2mpa -q - - | mpg123 -
 
 
 
