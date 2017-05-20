@@ -28,13 +28,3 @@ Play BBC Radio 1 through soundcard:
 
     dvbstream -o -f 529833330 436 | ts2mpa -q - - | mpg123 -
 
-
-
-
-Todo
-----
-
-- Add support for resyncing transport stream
-- Automatic output file name choosing
-- Progress bar?
-
